@@ -1,0 +1,5 @@
+this code is ok but i want to create an instance of rectangle in it 
+please do that and also show the rectangle class
+tip 2 boht kam ayega when you need to check that ke vo shape kiska instance hai
+basically u creates shapes array list aur mouse released pe sab add hote  rahenge
+in the paint component use this tip 2
