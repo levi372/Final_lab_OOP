@@ -24,13 +24,14 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
     private Toolbar toolbar;//ye layega colors
 
    // variables for all buttons
-   private Button Current_SHAPEBUTTON;
+    private  Button Current_SHAPEBUTTON;
     private  Button rightangletriangle_B;
     private  Button eq_tri_B;
     private  Button circle_B;
     private  Button rectangle_B;
     private  Button pentagram_B;
     private  Button hexagon_B;
+    private  Button pen_B;
     private final ArrayList<Button> shapes_buttons = new ArrayList<>(); //need to add buttons so that evryytime repaint function called theyare drewed
     private Layers layers;
     private Layer top;
@@ -152,6 +153,13 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         rightangletriangle_B = new Button(600, 100, 64, 64, r_dep.getImage(), r_pre.getImage());
         shapes_buttons.add(rightangletriangle_B);
         tooltips.add(new Tooltip(rightangletriangle_B,"Right Tri"));
+
+        ImageIcon pen_dep = new ImageIcon("src/Shapes/Pen Dep.png");
+        ImageIcon pen_pre = new ImageIcon("src/Shapes/Pen Pre.png");
+        pen_B = new Button(220, 5, 64, 64, pen_dep.getImage(), pen_pre.getImage());
+        shapes_buttons.add(pen_B);
+        tooltips.add(new Tooltip(pen_B,"Free Drawing Pen"));
+
 
     }
 
