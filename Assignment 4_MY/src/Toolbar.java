@@ -1,11 +1,13 @@
 import java.awt.*;
 import java.util.ArrayList;
 
+import javax.tools.Tool;
+
 public class Toolbar extends Button{
 
 
     private final Button Edit_color;
-    private final Window Gradiant_window;
+    private final Gradiant_Window Gradiant_window;
      final Button Stroke_colorbox; //was private
      final Button fill_Button_colorbox; //was private
     private final Button red;
@@ -14,16 +16,38 @@ public class Toolbar extends Button{
     private final Button custom1;
     private final Button custom2;
     private final Button custom3;
+
+    //PEN BUTTTONS
+    Button Strokewidth_heading;
+    int stroke_size=5;
+    Button strokewidth_small;
+    Button strokewidth_medium;
+    Button strokewidth_large;
+    private final ArrayList<Button> penbuttons=new ArrayList<>();
+
+
     private final ArrayList<Button> gradient = new ArrayList<>(); //stores all rgb colors in the window
     private final Button display;
     private final ArrayList<Button> customs = new ArrayList<>(); //the 3 white colors which recieve color from gradiant
     private final Button Add_color;
     private int count = 0;
     private ArrayList<Tooltip> tooltips = new ArrayList<>();
+
+
     public Toolbar(){
 
-
         super(0,0,0,0, Color.BLACK,Color.GRAY);
+
+        Strokewidth_heading=new Button(330,5,100,30,Color.BLACK,Color.YELLOW,"STROKE WIDTH");
+        penbuttons.add(Strokewidth_heading);
+        strokewidth_small=new Button(280,40,50,32,Color.BLACK,Color.ORANGE,"SMALL");
+        penbuttons.add(strokewidth_small);
+        strokewidth_medium=new Button(350,40,60,32,Color.BLACK,Color.ORANGE,"MEDIUM");
+        penbuttons.add(strokewidth_medium);
+        strokewidth_large=new Button(420,40,50,32,Color.BLACK,Color.ORANGE,"LARGE");
+        penbuttons.add(strokewidth_large);
+
+
 
 
         red = new Button(500, 10, 32, 32, Color.BLACK, Color.RED);
@@ -48,18 +72,20 @@ public class Toolbar extends Button{
 
 
         Stroke_colorbox = new Button(645, 20, 64, 64, Color.BLACK, Color.WHITE);
-        tooltips.add(new Tooltip(Stroke_colorbox,"Stroke Color"));
+        //tooltips.add(new Tooltip(Stroke_colorbox,"Stroke Color"));
+        tooltips.add(Tooltip.getInstance(Stroke_colorbox, "Stroke Color"));
 
 
         fill_Button_colorbox = new Button(720, 20, 64, 64, Color.BLACK, Color.WHITE);
-        tooltips.add(new Tooltip(fill_Button_colorbox,"Button Color"));
+        //tooltips.add(new Tooltip(fill_Button_colorbox,"Button Color"));
+        tooltips.add(Tooltip.getInstance(fill_Button_colorbox, "Button Color"));
+
 
 
         Edit_color = new Button(700, 100, 75, 50, Color.BLACK, Color.orange, "EDIT Color");
 
-
-        Gradiant_window = new Window(100,250,400,400,"Colors gradiant tab"); //this is window not button
-
+        //singleton
+        Gradiant_window = Gradiant_Window.getInstance(100,250,400,400,"Colors gradiant tab"); //this is window not button
 
         display = new Button(174,580,66,40,Color.BLACK,Color.WHITE);
 
@@ -70,6 +96,11 @@ public class Toolbar extends Button{
     @Override
     public void paint(Graphics g){
         super.paint(g);
+
+        for(Button p: penbuttons){ //paints all buttons
+            p.paint(g);
+        }
+
         red.paint(g);
         blue.paint(g);
         green.paint(g);
@@ -94,54 +125,100 @@ public class Toolbar extends Button{
     }
 
     public void handleClick(int x, int y){
-        if(!Gradiant_window.getVisible()){
+        if(!Gradiant_window.getVisible()){ //if gradiant window not visible
+
+            //setting radius and colours
+            if(strokewidth_small.Clicked(x, y)){
+                stroke_size=5;
+                strokewidth_small.setColor(Color.RED);
+                strokewidth_medium.setColor(Color.ORANGE);
+                strokewidth_large.setColor(Color.ORANGE);
+            }
+            if(strokewidth_medium.Clicked(x, y)){
+                stroke_size=10;
+                strokewidth_small.setColor(Color.ORANGE);
+                strokewidth_medium.setColor(Color.RED);
+                strokewidth_large.setColor(Color.ORANGE);
+            }
+            if(strokewidth_large.Clicked(x, y)){
+                stroke_size=20;
+                strokewidth_small.setColor(Color.ORANGE);
+                strokewidth_medium.setColor(Color.ORANGE);
+                strokewidth_large.setColor(Color.RED);
+            }
+
+            if(!strokewidth_small.Clicked(x, y) && !strokewidth_medium.Clicked(x, y) && !strokewidth_large.Clicked(x, y) ){
+                strokewidth_small.setColor(Color.ORANGE);
+                strokewidth_medium.setColor(Color.ORANGE);
+                strokewidth_large.setColor(Color.ORANGE);
+            }
+
+
+
             if(Edit_color.Clicked(x,y)){
                 makeGradient();
                 Gradiant_window.setVisible(true);
             }
+
             if(!Stroke_colorbox.getClicked()){
                 fill_Button_colorbox.Toggle(x,y);
             }
+
             if (!fill_Button_colorbox.getClicked()){
                 Stroke_colorbox.Toggle(x,y);
             }
+
             if(Stroke_colorbox.getClicked() && red.Clicked(x,y)){
                 Stroke_colorbox.setColor(red.getColor());
             }
+
             else if(Stroke_colorbox.getClicked() && blue.Clicked(x,y)){
                 Stroke_colorbox.setColor(blue.getColor());
             }
+
             else if(Stroke_colorbox.getClicked() && green.Clicked(x,y)){
                 Stroke_colorbox.setColor(green.getColor());
             }
+
             else if(Stroke_colorbox.getClicked() && custom1.Clicked(x,y)){
                 Stroke_colorbox.setColor(custom1.getColor());
             }
+
             else if(Stroke_colorbox.getClicked() && custom2.Clicked(x,y)){
                 Stroke_colorbox.setColor(custom2.getColor());
             }
+
             else if(Stroke_colorbox.getClicked() && custom3.Clicked(x,y)){
                 Stroke_colorbox.setColor(custom3.getColor());
             }
+
             if(fill_Button_colorbox.getClicked() && red.Clicked(x,y)){
                 fill_Button_colorbox.setColor(red.getColor());
             }
+
             else if(fill_Button_colorbox.getClicked() && blue.Clicked(x,y)){
                 fill_Button_colorbox.setColor(blue.getColor());
             }
+
             else if(fill_Button_colorbox.getClicked() && green.Clicked(x,y)){
                 fill_Button_colorbox.setColor(green.getColor());
             }
+
             else if(fill_Button_colorbox.getClicked() && custom1.Clicked(x,y)){
                 fill_Button_colorbox.setColor(custom1.getColor());
             }
+
             else if(fill_Button_colorbox.getClicked() && custom2.Clicked(x,y)){
                 fill_Button_colorbox.setColor(custom2.getColor());
             }
+
             else if(fill_Button_colorbox.getClicked() && custom3.Clicked(x,y)){
                 fill_Button_colorbox.setColor(custom3.getColor());
             }
+
         }
+
+
         else if(Gradiant_window.getVisible()){
             //adds colors to white boxes through color gradiant window
             //note gradiant has lots of buttons
@@ -162,6 +239,8 @@ public class Toolbar extends Button{
             }
         }
     }
+
+
     public void handleHover(int x, int y)
     {
         fill_Button_colorbox.Hovered(x,y);

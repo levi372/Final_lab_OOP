@@ -2,8 +2,18 @@ import java.awt.*;
 
 public class Grid extends Button {
     private int count;
-    public Grid() {
+    private static Grid instance;
+
+    private Grid() {
         super(128, 0, 64, 64, Color.BLACK, Color.GREEN, "Grid");
+    }
+
+     //singleton design pattern for grid
+      public static Grid getInstance() {
+        if (instance == null) {
+            instance = new Grid();
+        }
+        return instance;
     }
 
     public void handleClick(int x, int y){

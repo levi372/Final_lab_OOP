@@ -1,5 +1,7 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Rectangle extends Shape {
     private int x;
@@ -8,14 +10,16 @@ public class Rectangle extends Shape {
     private int height;
     Color stroke_color;
     Color fill_color;
+    int stroke_size;//border
 
-    public Rectangle(int x, int y, int width, int height,Color strokeColor,Color fillcolor) {
+    public Rectangle(int x, int y, int width, int height,Color strokeColor,Color fillcolor,int stroke_size) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.stroke_color=strokeColor;
         this.fill_color=fillcolor;
+        this.stroke_size=stroke_size;
     }
 
     public int getX() {
@@ -61,10 +65,13 @@ public class Rectangle extends Shape {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(stroke_color);
-        g.drawRect(x, y, width, height);
-        g.setColor(fill_color);
-        g.fillRect(x, y, width, height);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(fill_color);
+        g2d.fillRect(x, y, width, height);
+        g2d.setColor(stroke_color);
+        g2d.setStroke( new BasicStroke(stroke_size) );
+        g2d.drawRect(x, y, width, height);
+       
     }
     
 

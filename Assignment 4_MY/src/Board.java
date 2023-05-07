@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -33,16 +34,18 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
     private  Button hexagon_B;
     private  Button pen_B;
     private final ArrayList<Button> shapes_buttons = new ArrayList<>(); //need to add buttons so that evryytime repaint function called theyare drewed
-    private Layers layers;
-    private Layer top;
+     Layers layers; //isme  1 layer add hogi
+    private Layer toplayer;
     private Grid grid;
     private Button back_panel;
     private final ArrayList<Tooltip> tooltips = new ArrayList<>();
 
     //VARIABLE FOR SHAPES
     Graphics g;
-    Stack shapes=new Stack(); //maybe i will use arraylist which is way easier
-    Stack undo_redo=new Stack();
+
+    //undoredo
+    Shape current_shape;
+
 
     //CIRCLE
     Point center;
@@ -55,20 +58,31 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
     Point endPoint;
 
     //EQ_TRIANGLE
-    EquilateralTriangle eqTriangle_shape;
+    Shape eqTriangle_shape;
 
     //Hexagon
-    Hexagon hexagon_shape;
+    Shape hexagon_shape;
 
     //PENTAGRAM
-    Pentagram pentagram_shape; //uses same start point and end point of eq triangle
+    Shape pentagram_shape; //uses same start point and end point of eq triangle
 
     //RECTANGLE
-    Rectangle rectangle_shape;
+    Shape rectangle_shape;
 
     //Rightangletriangle
-    Rightangletriangle rightangletriangle_shape;
+    Shape rightangletriangle_shape;
     
+    //FREE DRAWING
+     ArrayList<Shape> freedrawingcircles = new ArrayList<>(); //in asssignment use linked list instead of this
+    
+    
+    //STORING Shapes
+    //Stack shape_stack=new Stack();
+    //ArrayList<Shape> allshapes=new ArrayList<>();
+
+
+    //private Point lastPoint;
+   //will remove this as ye tool bar se ayega
     
     
     //ArrayList<Integer> clickX=new ArrayList<>();
@@ -108,8 +122,8 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         back_panel = new Button(0, 0, 800, 200, Color.BLACK, Color.pink);
         toolbar = new Toolbar();
         layers = new Layers();
-        top = layers.getTopLayer();
-        grid = new Grid();
+        toplayer = layers.getTopLayer();
+        grid = Grid.getInstance(); //singleton
 
        //ALL SHAPES BUTTONS
 
@@ -117,48 +131,61 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         ImageIcon c_pre = new ImageIcon("src/Shapes/Circle Pressed.png");
         circle_B = new Button(100, 100, 64, 64, c_dep.getImage(), c_pre.getImage());
         shapes_buttons.add(circle_B); 
-        tooltips.add( new Tooltip(circle_B,"Circle"));
+        //tooltips.add( new Tooltip(circle_B,"Circle"));
+        tooltips.add(Tooltip.getInstance(circle_B, "CIRCLE"));
 
 
         ImageIcon eq_dep = new ImageIcon("src/Shapes/EQ Tri Dep.png");
         ImageIcon eq_pre = new ImageIcon("src/Shapes/EQ Tri Pre.png");
         eq_tri_B = new Button(200, 100, 64, 64, eq_dep.getImage(), eq_pre.getImage());
         shapes_buttons.add(eq_tri_B);
-        tooltips.add(new Tooltip(eq_tri_B,"EQ Tri"));
+        //tooltips.add(new Tooltip(eq_tri_B,"EQ Tri"));
+        tooltips.add(Tooltip.getInstance(eq_tri_B, "EQ Tri"));
+
 
 
         ImageIcon hex_dep = new ImageIcon("src/Shapes/Hex Dep.png");
         ImageIcon hex_pre = new ImageIcon("src/Shapes/Hex Pre.png");
         hexagon_B = new Button(300, 100, 64, 64, hex_dep.getImage(), hex_pre.getImage());
         shapes_buttons.add(hexagon_B);
-        tooltips.add(new Tooltip(hexagon_B, "Hexagon"));
+        //tooltips.add(new Tooltip(hexagon_B, "Hexagon"));
+        tooltips.add(Tooltip.getInstance(hexagon_B, "Hexagon"));
+
 
 
         ImageIcon pent_pre = new ImageIcon("src/Shapes/Pent Pre.png");
         ImageIcon pent_dep = new ImageIcon("src/Shapes/Pentagram Dep.png");
         pentagram_B = new Button(400, 100, 64, 64, pent_dep.getImage(), pent_pre.getImage());
         shapes_buttons.add(pentagram_B);
-        tooltips.add(new Tooltip(pentagram_B, "Pentagram"));
+        //tooltips.add(new Tooltip(pentagram_B, "Pentagram"));
+        tooltips.add(Tooltip.getInstance(pentagram_B, "Pentagram"));
+
 
 
         ImageIcon rect_dep = new ImageIcon("src/Shapes/Rectangle Dep.png");
         ImageIcon rect_pre = new ImageIcon("src/Shapes/Rectangle Pressed.png");
         rectangle_B = new Button(500, 100, 64, 64, rect_dep.getImage(), rect_pre.getImage());
         shapes_buttons.add(rectangle_B);
-        tooltips.add(new Tooltip(rectangle_B,"Rectangle"));
+        //tooltips.add(new Tooltip(rectangle_B,"Rectangle"));
+        tooltips.add(Tooltip.getInstance(rectangle_B, "Rectangle"));
+
 
 
         ImageIcon r_dep = new ImageIcon("src/Shapes/Right Tri Dep.png");
         ImageIcon r_pre = new ImageIcon("src/Shapes/Right Tri Pre.png");
         rightangletriangle_B = new Button(600, 100, 64, 64, r_dep.getImage(), r_pre.getImage());
         shapes_buttons.add(rightangletriangle_B);
-        tooltips.add(new Tooltip(rightangletriangle_B,"Right Tri"));
+        //tooltips.add(new Tooltip(rightangletriangle_B,"Right Tri"));
+        tooltips.add(Tooltip.getInstance(rightangletriangle_B, "Right Tri"));
+
 
         ImageIcon pen_dep = new ImageIcon("src/Shapes/Pen Dep.png");
         ImageIcon pen_pre = new ImageIcon("src/Shapes/Pen Pre.png");
-        pen_B = new Button(220, 5, 64, 64, pen_dep.getImage(), pen_pre.getImage());
+        pen_B = new Button(10, 100, 64, 64, pen_dep.getImage(), pen_pre.getImage());
         shapes_buttons.add(pen_B);
-        tooltips.add(new Tooltip(pen_B,"Free Drawing Pen"));
+        //tooltips.add(new Tooltip(pen_B,"Free Drawing Pen"));
+        tooltips.add(Tooltip.getInstance(pen_B, "Free Drawing Pen"));
+
 
 
     }
@@ -167,9 +194,19 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-         drawButton(g); //all buttons drawing are baba ye mat ura dena saee
-        
 
+         drawButton(g); //draws all buttons
+
+        layers.paintlayers(g);       
+
+
+   //freedrawing
+         for(int i=0;i<freedrawingcircles.size();i++){
+            freedrawingcircles.get(i).draw(g);
+         }
+
+        
+         /* 
          //CIRCLE
           if(Current_SHAPEBUTTON==circle_B){
 
@@ -185,7 +222,6 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             if (eqTriangle_shape != null) {
                 eqTriangle_shape.draw(g);
             }
-
          }
 
          //HEXAGON
@@ -193,6 +229,9 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             if (hexagon_shape != null) {
                 hexagon_shape.draw(g);
             }
+            if (startPoint != null && endPoint != null) { //this done for smoothness
+                    new Hexagon(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size).draw(g);
+                }
          }
 
 
@@ -217,7 +256,15 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             }
          }
 
+         */
+
+
+
          
+
+         
+
+
 
 
 
@@ -228,10 +275,10 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
     
 
     
-     /* 
+      /* 
     private void setUpDrawingGraphics(){
         g=getGraphics();
-        shapes.drawData(g);
+        shape_stack.drawData(g);
     }
     */
 
@@ -245,7 +292,7 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         public void keyPressed(KeyEvent e) {
             toolbar.gradientKey(e.getKeyChar());//ye sirf color gradiant show krega 'g'
             fileButton.Key(e.getKeyChar());
-            editButton.Key(e.getKeyChar());
+            editButton.Key(e.getKeyChar()); //yaha se bhe undo redo tak jana hai
             layers.Key(e.getKeyChar());
         }
     }
@@ -271,7 +318,7 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
     public void actionPerformed(ActionEvent e) {
         Toolkit.getDefaultToolkit().sync();
         repaint();
-        top = layers.getTopLayer();
+        toplayer = layers.getTopLayer();
 
     }
 
@@ -281,13 +328,14 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         
 	}
     
-    public void IsClicked(int x, int y)
-    {
-        if(!fileButton.getClicked() && !toolbar.winClicked()){
-            editButton.handleClick(x,y);
+    public void IsClicked(int x, int y){
+        if(!fileButton.getClicked() && !toolbar.winClicked()){ //undo redo here
+         editButton.handleClick(x,y); //edit button clicked
+        
+           
         }
     	if(!editButton.getClicked() && !toolbar.winClicked()){
-            fileButton.handleClick(x,y);
+            fileButton.handleClick(x,y); //file button clicked
         }
         if(!fileButton.getClicked() && !editButton.getClicked()){
             toolbar.handleClick(x,y);
@@ -318,9 +366,6 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             }
         }
     }
-    
-
-	
 
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -328,8 +373,8 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         //CIRCLE
         if(Current_SHAPEBUTTON==circle_B){
         center=e.getPoint();
-        circle_shape = new Circle(center, 0, toolbar.Stroke_colorbox.getColor(), toolbar.fill_Button_colorbox.getColor());
-        }
+        circle_shape = new Circle(center, 0, toolbar.Stroke_colorbox.getColor(), toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+    }
 
         //EQ_triangle
         if(Current_SHAPEBUTTON==eq_tri_B){
@@ -338,7 +383,7 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
 
         //HEXAGON
         if(Current_SHAPEBUTTON==hexagon_B){
-             hexagon_shape = new Hexagon(e.getPoint(),toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor()); //sets start point
+            startPoint=e.getPoint();
              repaint();
         }
 
@@ -355,6 +400,11 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         //rightangletriangle
         if(Current_SHAPEBUTTON==rightangletriangle_B){
             startPoint = e.getPoint();
+        }
+
+        //FREE drawing
+        if(Current_SHAPEBUTTON==pen_B){
+         endPoint=e.getPoint();
         }
 
 
@@ -392,8 +442,8 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
 
 	@Override
 	public void mouseReleased(MouseEvent e) { 
+        //stack also added here
 
-        //yaha pe colours addhonge toolbar se
         //yaha pe layers addition bhe hoga
         //undo redo bhe hoskta ig
 
@@ -403,28 +453,39 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
 
            radiusPoint=e.getPoint();
            int radius = (int) Math.sqrt(Math.pow(radiusPoint.x - center.x, 2) + Math.pow(radiusPoint.y - center.y, 2));
-           circle_shape = new Circle(center, radius, toolbar.Stroke_colorbox.getColor(), toolbar.fill_Button_colorbox.getColor()); // create new Circle object
+           circle_shape = new Circle(center, radius, toolbar.Stroke_colorbox.getColor(), toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size); // create new Circle object
+           //allshapes.add(circle_shape); 
+           layers.addshapestolayer(circle_shape);
            repaint();
 	    }
 
         //eq_triangle
         if(Current_SHAPEBUTTON==eq_tri_B){
             endPoint = e.getPoint();
-            eqTriangle_shape = new EquilateralTriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor()); // create new instance of EquilateralTriangle
+            eqTriangle_shape = new EquilateralTriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size); // create new instance of EquilateralTriangle
+            //allshapes.add(eqTriangle_shape);
+            layers.addshapestolayer(eqTriangle_shape);
             repaint();
         }
 
         //HEXAGON
         if(Current_SHAPEBUTTON==hexagon_B){
-            hexagon_shape=null; //isme masla hoga ise dekh lena
-            repaint();
+                endPoint = e.getPoint();
+                hexagon_shape =new Hexagon(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+                //allshapes.add(hexagon_shape);
+                layers.addshapestolayer(hexagon_shape);
+                startPoint = null;
+                endPoint = null;
+                repaint();
         }
 
         //PENTAGRAM
         if(Current_SHAPEBUTTON==pentagram_B){
             endPoint = e.getPoint();
             int size=Math.min( Math.abs(endPoint.x - startPoint.x), Math.abs(endPoint.y - startPoint.y));
-            pentagram_shape = new Pentagram(startPoint.x, startPoint.y,size, toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            pentagram_shape = new Pentagram(startPoint.x, startPoint.y,size, toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+            //allshapes.add(pentagram_shape);
+            layers.addshapestolayer(pentagram_shape);
             repaint();
         }
 
@@ -435,14 +496,18 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             int y = Math.min(startPoint.y, endPoint.y);
             int width = Math.abs(startPoint.x - endPoint.x);
             int height = Math.abs(startPoint.y - endPoint.y);
-            rectangle_shape = new Rectangle(x, y, width, height,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            rectangle_shape = new Rectangle(x, y, width, height,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+            //allshapes.add(rectangle_shape);
+            layers.addshapestolayer(rectangle_shape);
             repaint();
         }
 
         //rightangletriangle
         if(Current_SHAPEBUTTON==rightangletriangle_B){
             endPoint = e.getPoint();
-            rightangletriangle_shape = new Rightangletriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            rightangletriangle_shape = new Rightangletriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+            //allshapes.add(rightangletriangle_shape);
+            layers.addshapestolayer(rightangletriangle_shape);
             repaint();
         }
 
@@ -464,23 +529,21 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         //EQ_triangle
         if(Current_SHAPEBUTTON==eq_tri_B){
             endPoint = e.getPoint();
-            eqTriangle_shape = new EquilateralTriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor()); // create new instance of EquilateralTriangle
+            eqTriangle_shape = new EquilateralTriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size); // create new instance of EquilateralTriangle
             repaint();
         }
 
         //HEXAGON
         if(Current_SHAPEBUTTON==hexagon_B){
-            if (hexagon_shape != null) {
-                hexagon_shape.setEndPoint(e.getPoint());
-                repaint();
-            }
+            endPoint=e.getPoint();
+            repaint();
         }
 
         //PENTAGRAM
         if(Current_SHAPEBUTTON==pentagram_B){
             endPoint = e.getPoint();
             int size=Math.min( Math.abs(endPoint.x - startPoint.x), Math.abs(endPoint.y - startPoint.y));
-            pentagram_shape = new Pentagram(startPoint.x, startPoint.y,size,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            pentagram_shape = new Pentagram(startPoint.x, startPoint.y,size,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
             repaint();
         }
 
@@ -491,14 +554,23 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
             int y = Math.min(startPoint.y, endPoint.y);
             int width = Math.abs(startPoint.x - endPoint.x);
             int height = Math.abs(startPoint.y - endPoint.y);
-            rectangle_shape = new Rectangle(x, y, width, height,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            rectangle_shape = new Rectangle(x, y, width, height,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
             repaint();
         }
 
         //RIGHTANGLETRIANGLE
         if(Current_SHAPEBUTTON==rightangletriangle_B){
             endPoint = e.getPoint();
-            rightangletriangle_shape = new Rightangletriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor());
+            rightangletriangle_shape = new Rightangletriangle(startPoint, endPoint,toolbar.Stroke_colorbox.getColor(),toolbar.fill_Button_colorbox.getColor(),toolbar.stroke_size);
+            repaint();
+        }
+
+        //Free_drawing
+        if(Current_SHAPEBUTTON==pen_B){
+            Point currentpoint=e.getPoint();
+            Circle circle = new Circle(currentpoint, toolbar.stroke_size, toolbar.Stroke_colorbox.getColor(), toolbar.fill_Button_colorbox.getColor());
+            freedrawingcircles.add(circle);
+            endPoint = currentpoint;
             repaint();
         }
 
@@ -518,6 +590,7 @@ public Board() { //this board is the white one yahi sari drawings hogi  yessssss
         {
             b.Hovered(e.getX(),e.getY());
         }
+
 
         if(Current_SHAPEBUTTON==rightangletriangle_B){
             endPoint = e.getPoint();

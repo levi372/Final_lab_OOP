@@ -1,9 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class EditButton extends Button {
-    private final Button redoButton;
-    private final Button undoButton;
+     Button redoButton;
+     Button undoButton;
+     
 
 
     public EditButton(int x, int y, int width, int height) {
@@ -11,6 +13,7 @@ public class EditButton extends Button {
 
         // Create the redo button
         redoButton = new Button(x, y + height, width, height,Color.BLACK,Color.WHITE,"Redo");
+
 
         // Create the undo button
         undoButton = new Button(x, y + 2 * height, width, height, Color.BLACK,Color.WHITE,"Undo");
@@ -20,13 +23,17 @@ public class EditButton extends Button {
         Toggle(x,y);
         if(super.getClicked()) {
             if(redoButton.Clicked(x,y)){
-                System.out.println("Redo");
+                System.out.println("Redo"); //yaha oe redo functionality ayegi           
             }
             if(undoButton.Clicked(x,y)){
-                System.out.println("Undo");
+                System.out.println("Undo"); //yaha ye undo functionality after undo button clicked
             }
         }
+
     }
+
+
+   
 
     @Override
     public void paint(Graphics g) {
@@ -35,13 +42,14 @@ public class EditButton extends Button {
             redoButton.paint(g);
             undoButton.paint(g);
         }
+
     }
 
     public void Key(char key){
-        if(key == '-'){
+        if(key == 'u'){
             System.out.println("Undo");
         }
-        if(key == '+'){
+        if(key == 'r'){
             System.out.println("Redo");
         }
     }

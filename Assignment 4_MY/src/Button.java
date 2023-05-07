@@ -15,7 +15,8 @@ public class Button {
     private boolean img;
     private boolean hovered;
 
-    public Button(int x, int y, int length, int height,Image dep_img, Image pre_img) {
+   //constructor with image
+    public Button(int x, int y, int length, int height,Image dep_img, Image pre_img) { //isme tooltip daalna prega as no text
         this.x = x;
         this.y = y;
         this.length = length;
@@ -27,7 +28,7 @@ public class Button {
     }
 
     // Constructor with text
-    public Button(int x, int y, int length, int height, Color stroke_col, Color button_col, String text) {
+    public Button(int x, int y, int length, int height, Color stroke_col, Color button_col, String text) { //o tool tip required for this as text available
         this.x = x;
         this.y = y;
         this.length = length;

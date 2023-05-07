@@ -10,8 +10,10 @@ public class File_Button extends Button {
     private final Button newButton;
     private final Button saveButton;
     private final Button openButton;
-    private final Window openWindow;
+    private final FILE_Window openWindow;
     private final ArrayList<Button> file_names = new ArrayList<>();
+
+
 
 
     public File_Button(int x, int y, int length, int height) {
@@ -24,9 +26,10 @@ public class File_Button extends Button {
 
         saveButton = new Button(x, y + 2 * height, length, height, stroke_col, button_col, "Save");
 
+
         openButton = new Button(x, y + 3 * height, length, height, stroke_col, button_col, "Open");
 
-        openWindow = new Window(100,250,400,400,"Files");
+        openWindow = FILE_Window.getInstance(100,250,400,400,"Files");
     }
 
     @Override

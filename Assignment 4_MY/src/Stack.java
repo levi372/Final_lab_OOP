@@ -25,7 +25,7 @@ public class Stack {
         }
     }
 
-    public void drawData(Graphics g) {
+    public void drawData(Graphics g) { //for drawing graphics and smoothnmess
         Node temp = top;      
          if(temp!=null) {
          temp.data.draw(g);
@@ -36,8 +36,9 @@ public class Stack {
     public void drawAll(Graphics g) {
         Node temp = top;      
          while(temp!=null) {
-         temp.data.draw(g);
+        temp.data.draw(g);
          temp = temp.next;
+         
         }
     }
     
